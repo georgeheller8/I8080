@@ -27,8 +27,17 @@ typedef struct {
 void push_to_stack(I8080* cpu, uint8_t register);
 void pop_from_stack(I8080* cpu, uint8_t register);
 void increment_cycles(I8080* cpu, uint8_t num);
+void increment_pc(I8080* cpu, uint8_t num);
 void cycle(I8080* cpu);
 void init_cpu(I8080* cpu);
+
+// flag checkers
+
+void update_zero(I8080* cpu, uint8_t result);
+void update_sign(I8080* cpu, uint8_t result);
+void update_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP);
+void update_aux_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP);
+void update_parity(I8080* cpu, uint8_t result);
 
 // CARRY BIT INSTRUCTIONS
 
