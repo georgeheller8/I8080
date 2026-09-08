@@ -9,6 +9,8 @@ typedef struct {
     uint16_t program_counter;
     uint16_t stack_pointer;
     uint8_t opcode;
+    uint8_t INTE;
+    uint8_t HALT;
 
     // ALU
 
@@ -32,6 +34,12 @@ void cycle(I8080* cpu);
 void init_cpu(I8080* cpu);
 
 // flag checkers
+
+void set_carry(I8080* cpu, uint8_t num);
+void set_aux_carry(I8080* cpu, uint8_t num);
+void set_zero(I8080* cpu, uint8_t num);
+void set_sign(I8080* cpu, uint8_t num);
+void set_parity(I8080* cpu, uint8_t num);
 
 void update_zero(I8080* cpu, uint8_t result);
 void update_sign(I8080* cpu, uint8_t result);
