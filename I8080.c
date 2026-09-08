@@ -860,6 +860,35 @@ void SPHL(I8080* cpu) {
     increment_pc(cpu, 1);
 }
 
+// Load immediate data
+void LXI(I8080* cpu) {
+    uint8_t reg = (cpu->opcode >> 3);
+    uint8_t MSB = (cpu->memory)[cpu->program_counter + 2];
+    uint8_t LSB = (cpu->memory)[cpu->program_counter + 1];
+
+    switch (reg) {
+        case 0: // BC
+            (cpu->registers)[0] = MSB;
+            (cpu->registers)[1] = LSB;
+            break;
+        case 1: // DE
+            (cpu->registers)[2] = MSB;
+            (cpu->registers)[3] = LSB;
+            break;
+        case 2: // HL
+            (cpu->registers)[4] = MSB;
+            (cpu->registers)[5] = LSB;
+            break;
+        case 3: // SP
+            cpu->stack_pointer = ((uint16_t)MSB << 8) | LSB;
+            break;
+    }
+
+    increment_pc(cpu, 3);
+    increment_cycles(cpu, 10);
+
+}
+
 // Move Immediate Data
 void MVI(I8080* cpu) {
     uint8_t reg = (cpu->opcode >> 3);
@@ -1200,7 +1229,7 @@ void CNZ(I8080* cpu) {
 }
 
 // Call if Minus
-void CC(I8080* cpu) {
+void CM(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (SIGN) {
@@ -1212,7 +1241,7 @@ void CC(I8080* cpu) {
 }
 
 // Call if Plus
-void CC(I8080* cpu) {
+void CP(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!SIGN) {
@@ -1224,7 +1253,7 @@ void CC(I8080* cpu) {
 }
 
 // Call if Parity Even
-void CC(I8080* cpu) {
+void CPE(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (PARITY) {
@@ -1236,7 +1265,7 @@ void CC(I8080* cpu) {
 }
 
 // Call if Parity Odd
-void CC(I8080* cpu) {
+void CPO(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!PARITY) {
@@ -1402,3 +1431,4 @@ void HLT(I8080* cpu) {
     increment_pc(cpu, 1);
     increment_cycles(cpu, 7);
 }
+
