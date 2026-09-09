@@ -1,75 +1,35 @@
-#include <stdint.h>
+#ifndef OPCODES_H
+#define OPCODES_H
 
-typedef struct {
+// Every instruction the CPU implements, grouped by family. Each family lives
+// in the .c file named alongside it. I8080.c wires these into the dispatch
+// table; the implementations themselves also pull in util.h.
 
-    // Registers
+#include "I8080.h"
 
-    uint8_t wz[2]; // WZ -> 01
-    uint8_t registers[8]; // BCDEHLAF -> 01234567
-    uint16_t program_counter;
-    uint16_t stack_pointer;
-    uint8_t opcode;
-    uint8_t INTE;
-    uint8_t HALT;
-
-    // ALU
-
-    //uint8_t accumulator;
-    uint8_t temp_accumulator;
-    //uint8_t flags; // zero, carry, sign, parity, aux carry -> 01234. Also register A
-    uint8_t TMP;
-
-    uint8_t memory[65536];
-
-    uint64_t cycles;
-    
-
-} I8080;
-
-void push_to_stack(I8080* cpu, uint8_t register);
-void pop_from_stack(I8080* cpu, uint8_t register);
-void increment_cycles(I8080* cpu, uint8_t num);
-void increment_pc(I8080* cpu, uint8_t num);
-void cycle(I8080* cpu);
-void init_cpu(I8080* cpu);
-
-// flag checkers
-
-void set_carry(I8080* cpu, uint8_t num);
-void set_aux_carry(I8080* cpu, uint8_t num);
-void set_zero(I8080* cpu, uint8_t num);
-void set_sign(I8080* cpu, uint8_t num);
-void set_parity(I8080* cpu, uint8_t num);
-
-void update_zero(I8080* cpu, uint8_t result);
-void update_sign(I8080* cpu, uint8_t result);
-void update_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP);
-void update_aux_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP);
-void update_parity(I8080* cpu, uint8_t result);
-
-// CARRY BIT INSTRUCTIONS
+// CARRY BIT INSTRUCTIONS -> carry_bit.c
 
 void STC(I8080* cpu);
 void CMC(I8080* cpu);
 
-// SINGLE REGISTER INSTRUCTIONS
+// SINGLE REGISTER INSTRUCTIONS -> single_register.c
 
 void INR(I8080* cpu);
 void DCR(I8080* cpu);
 void CMA(I8080* cpu);
 void DAA(I8080* cpu);
 
-// NOP INSTRUCTION
+// NOP INSTRUCTION -> nop.c
 
 void NOP(I8080* cpu);
 
-// DATA TRANSFER INSTRUCTIONS
+// DATA TRANSFER INSTRUCTIONS -> data_transfer.c
 
 void MOV(I8080* cpu);
 void STAX(I8080* cpu);
 void LDAX(I8080* cpu);
 
-// REGISTER OR MEMORY TO ACCUMULATOR INSTRUCTIONS
+// REGISTER OR MEMORY TO ACCUMULATOR INSTRUCTIONS -> accumulator.c
 
 void ADD(I8080* cpu);
 void ADC(I8080* cpu);
@@ -80,14 +40,14 @@ void XRA(I8080* cpu);
 void ORA(I8080* cpu);
 void CMP(I8080* cpu);
 
-// ROTATE ACCUMULATOR INSTRUCTIONS
+// ROTATE ACCUMULATOR INSTRUCTIONS -> rotate_accumulator.c
 
 void RLC(I8080* cpu);
 void RRC(I8080* cpu);
 void RAL(I8080* cpu);
 void RAR(I8080* cpu);
 
-// REGISTER PAIR INSTRUCTIONS
+// REGISTER PAIR INSTRUCTIONS -> register_pair.c
 
 void PUSH(I8080* cpu);
 void POP(I8080* cpu);
@@ -99,7 +59,7 @@ void XCHG(I8080* cpu);
 void XTHL(I8080* cpu);
 void SPHL(I8080* cpu);
 
-// IMMEDIATE INSTRUCTIONS
+// IMMEDIATE INSTRUCTIONS -> immediate.c
 
 void LXI(I8080* cpu);
 void MVI(I8080* cpu);
@@ -112,14 +72,14 @@ void XRI(I8080* cpu);
 void ORI(I8080* cpu);
 void CPI(I8080* cpu);
 
-// DIRECT ADDRESSING INSTRUCTIONS
+// DIRECT ADDRESSING INSTRUCTIONS -> direct_addressing.c
 
 void STA(I8080* cpu);
 void LDA(I8080* cpu);
 void SHLD(I8080* cpu);
 void LHLD(I8080* cpu);
 
-// JUMP INSTRUCTIONS
+// JUMP INSTRUCTIONS -> jump.c
 
 void PCHL(I8080* cpu);
 void JMP(I8080* cpu);
@@ -132,7 +92,7 @@ void JM(I8080* cpu);
 void JPE(I8080* cpu);
 void JPO(I8080* cpu);
 
-// CALL INSTRUCTIONS
+// CALL INSTRUCTIONS -> call.c
 
 void CALL(I8080* cpu);
 void CC(I8080* cpu);
@@ -144,7 +104,7 @@ void CM(I8080* cpu);
 void CPE(I8080* cpu);
 void CPO(I8080* cpu);
 
-// RETURN INSTRUCTIONS
+// RETURN INSTRUCTIONS -> return.c
 
 void RET(I8080* cpu);
 void RC(I8080* cpu);
@@ -156,20 +116,22 @@ void RP(I8080* cpu);
 void RPE(I8080* cpu);
 void RPO(I8080* cpu);
 
-// RST INSTRUCTION
+// RST INSTRUCTION -> rst.c
 
 void RST(I8080* cpu);
 
-// INTERRUPT FLIP-FLOP INSTRUCTIONS
+// INTERRUPT FLIP-FLOP INSTRUCTIONS -> interrupt.c
 
 void EI(I8080* cpu);
 void DI(I8080* cpu);
 
-// INPUT/OUTPUT INSTRUCTIONS;
+// INPUT/OUTPUT INSTRUCTIONS -> io.c
 
 void IN(I8080* cpu);
 void OUT(I8080* cpu);
 
-// HLT INSTRUCTION
+// HLT INSTRUCTION -> hlt.c
 
 void HLT(I8080* cpu);
+
+#endif

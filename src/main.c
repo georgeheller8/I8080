@@ -94,7 +94,7 @@ int main(int argc, char* argv[]) {
                     break;
                 // TODO: Key presses
                 default:
-
+                    break;
             }
         }
     
