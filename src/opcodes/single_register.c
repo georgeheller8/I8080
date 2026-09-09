@@ -14,14 +14,16 @@ void INR(I8080* cpu) {
         result = (cpu->registers)[reg];
     }
     else if (reg == 6) {
-        (cpu->memory)[((cpu->registers)[5] << 8) | (cpu->registers)[6]] += 1;
-        result = (cpu->memory)[((cpu->registers)[5] << 8) | (cpu->registers)[6]];
+        (cpu->memory)[HL] += 1;
+        result = (cpu->memory)[HL];
+        increment_cycles(cpu, 5);
     }
     else if (reg == 7) {
         (cpu->registers)[6] += 1;
         result = (cpu->registers)[6];
     }
 
+    update_aux_carry(cpu, result-1, 1, 0);
     update_sign(cpu, result);
     update_zero(cpu, result);
     update_parity(cpu, result);
@@ -35,20 +37,23 @@ void DCR(I8080* cpu) {
 
     uint8_t reg = (cpu->opcode) >> 3;
     uint8_t result;
+    
 
     if (reg < 6) {
         (cpu->registers)[reg] -= 1;
         result = (cpu->registers)[reg];
     }
     else if (reg == 6) {
-        (cpu->memory)[((cpu->registers)[5] << 8) | (cpu->registers)[6]] -= 1;
-        result = (cpu->memory)[((cpu->registers)[5] << 8) | (cpu->registers)[6]];
+        (cpu->memory)[HL] -= 1;
+        result = (cpu->memory)[HL];
+        increment_cycles(cpu, 5);
     }
     else if (reg == 7) {
         (cpu->registers)[6] -= 1;
         result =  (cpu->registers)[6];
     }
 
+    update_aux_carry(cpu, result+1, 1, 1);
     update_sign(cpu, result);
     update_zero(cpu, result);
     update_parity(cpu, result);
@@ -67,7 +72,7 @@ void CMA(I8080* cpu) {
 
 
 // Decimal adjust accumulator
-void DAA(I8080* cpu) {
+void DAA(I8080* cpu) { // TODO: fix
 
     uint8_t LSB = ACC & 0x0F;
     uint8_t MSB = ACC >> 4;

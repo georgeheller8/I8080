@@ -26,7 +26,7 @@ void LDA(I8080* cpu) {
 }
 
 // Store H and L direct
-void SHLD(I8080* cpu) {
+void SHLD(I8080* cpu) { // TODO: Update casting
     uint16_t LSB = (cpu->memory)[cpu->program_counter + 1];
     uint16_t MSB = (cpu->memory)[cpu->program_counter + 2];
 
@@ -38,7 +38,7 @@ void SHLD(I8080* cpu) {
 }
 
 // Load H and L Direct
-void LHLD(I8080* cpu) {
+void LHLD(I8080* cpu) { // TODO: Update casting
     uint16_t LSB = (cpu->memory)[cpu->program_counter + 1];
     uint16_t MSB = (cpu->memory)[cpu->program_counter + 2];
 

@@ -5,7 +5,7 @@
 
 // Load immediate data
 void LXI(I8080* cpu) {
-    uint8_t reg = (cpu->opcode >> 3);
+    uint8_t reg = (cpu->opcode >> 4) & 0x03;
     uint8_t MSB = (cpu->memory)[cpu->program_counter + 2];
     uint8_t LSB = (cpu->memory)[cpu->program_counter + 1];
 
@@ -77,11 +77,12 @@ void ADI(I8080* cpu) {
 // Add Immediate with Carry
 void ACI(I8080* cpu) {
     uint8_t data = (cpu->memory)[cpu->program_counter + 1];
+    uint8_t CARRY_v = CARRY;
 
     set_carry(cpu, (uint16_t)(data + ACC + CARRY) > 255);
     set_aux_carry(cpu, (data & 0x0F) + (ACC & 0x0F) + CARRY > 15);
 
-    ACC += (data + CARRY);
+    ACC += (data + CARRY_v);
 
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
@@ -112,11 +113,13 @@ void SUI(I8080* cpu) {
 // Subtract Immediate from Accumulator with Borrow
 void SBI(I8080* cpu) {
     uint8_t data = (cpu->memory)[cpu->program_counter + 1];
+    uint8_t CARRY_v = CARRY;
+    uint16_t res = CARRY + data;
 
-    update_carry(cpu, ACC, (data+CARRY), 1);
-    update_aux_carry(cpu, ACC, (data+CARRY), 1);
+    set_carry(cpu, ACC < res);
+    set_aux_carry(cpu, (ACC & 0x0F) >= ((res & 0x0F) + CARRY_v));
 
-    ACC -= (data+CARRY);
+    ACC -= CARRY_v + data;
 
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
@@ -190,9 +193,9 @@ void CPI(I8080* cpu) {
         (cpu->registers)[7] &= ~(1 << 6);
     }
 
-    update_sign(cpu, ACC);
-    update_zero(cpu, ACC);
-    update_parity(cpu, ACC);
+    update_sign(cpu, ACC-data);
+    update_zero(cpu, ACC-data);
+    update_parity(cpu, ACC-data);
 
     increment_cycles(cpu, 7);
     increment_pc(cpu, 2);

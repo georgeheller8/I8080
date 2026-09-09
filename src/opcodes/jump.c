@@ -20,6 +20,7 @@ void JMP(I8080* cpu) {
 void JC(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (CARRY) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -27,6 +28,7 @@ void JC(I8080* cpu) {
 void JNC(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (!CARRY) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -34,6 +36,7 @@ void JNC(I8080* cpu) {
 void JZ(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (ZERO) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -41,6 +44,7 @@ void JZ(I8080* cpu) {
 void JNZ(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (!ZERO) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -48,6 +52,7 @@ void JNZ(I8080* cpu) {
 void JM(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (SIGN) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -55,6 +60,7 @@ void JM(I8080* cpu) {
 void JP(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (!SIGN) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -62,6 +68,7 @@ void JP(I8080* cpu) {
 void JPE(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (PARITY) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }
 
@@ -69,5 +76,6 @@ void JPE(I8080* cpu) {
 void JPO(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     if (!PARITY) cpu->program_counter = address;
+    else increment_pc(cpu, 3);
     increment_cycles(cpu, 10);
 }

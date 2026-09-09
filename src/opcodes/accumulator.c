@@ -28,7 +28,7 @@ void ADD(I8080* cpu) {
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -44,6 +44,7 @@ void ADC(I8080* cpu) {
 
     uint8_t SRC = (cpu->opcode) & 0x07;
     uint8_t SRC_v;
+    uint8_t CARRY_v = CARRY;
 
     if (SRC <= 5) {
         SRC_v = (cpu->registers)[SRC];
@@ -58,14 +59,13 @@ void ADC(I8080* cpu) {
     update_carry(cpu, SRC_v, ACC, 2);
     update_aux_carry(cpu, SRC_v, ACC, 2);
 
-    ACC += SRC_v;
-    ACC += CARRY;
+    ACC += (SRC_v + CARRY_v);
 
     update_sign(cpu, ACC);
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -99,7 +99,7 @@ void SUB(I8080* cpu) {
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -124,16 +124,19 @@ void SBB(I8080* cpu) {
         SRC_v = (cpu->registers)[6];
     }
 
-    update_carry(cpu, ACC, SRC_v + CARRY, 1);
-    update_aux_carry(cpu, ACC, SRC_v + CARRY, 1);
+    uint8_t CARRY_v = CARRY;
+    uint16_t res = (uint16_t)SRC_v + CARRY_v;
 
-    ACC -= (SRC_v + CARRY);
+    set_carry(cpu, ACC < res);
+    set_aux_carry(cpu, (ACC & 0x0F) >= ((SRC_v & 0x0F) + CARRY_v));
+
+    ACC -= (SRC_v + CARRY_v);
 
     update_sign(cpu, ACC);
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -144,7 +147,7 @@ void SBB(I8080* cpu) {
 }
 
 // Logical AND acc with memory or register
-void ANA(I8080* cpu) {
+void ANA(I8080* cpu) { // need to fix clearing aux carry?
     uint8_t SRC = (cpu->opcode) & 0x07;
     uint8_t SRC_v;
 
@@ -165,7 +168,7 @@ void ANA(I8080* cpu) {
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -193,14 +196,13 @@ void XRA(I8080* cpu) {
 
     ACC ^= SRC_v;
     (cpu->registers)[7] &= 0xFE;
-
-    // update aux carry?
+    (cpu->registers)[7] &= 0xEF; // is this right?
 
     update_sign(cpu, ACC);
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -227,14 +229,13 @@ void ORA(I8080* cpu) {
 
     ACC |= SRC_v;
     (cpu->registers)[7] &= 0xFE;
-
-    // update aux carry?
+    (cpu->registers)[7] &= 0xEF; // is this right?
 
     update_sign(cpu, ACC);
     update_zero(cpu, ACC);
     update_parity(cpu, ACC);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {
@@ -274,11 +275,11 @@ void CMP(I8080* cpu) {
         (cpu->registers)[7] &= ~(1 << 6);
     }
 
-    update_sign(cpu, ACC);
-    update_zero(cpu, ACC);
-    update_parity(cpu, ACC);
+    update_sign(cpu, ACC_v - SRC_v);
+    update_zero(cpu, ACC_v - SRC_v);
+    update_parity(cpu, ACC_v - SRC_v);
 
-    if (SRC != 5) {
+    if (SRC != 6) {
         increment_cycles(cpu, 4);
     }
     else {

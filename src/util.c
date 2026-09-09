@@ -9,7 +9,7 @@ void push_to_stack(I8080* cpu, uint8_t reg) {
 
     uint8_t MSB, LSB;
 
-    if (reg == 6) {
+    if (reg == 8) {
         MSB = ((cpu->program_counter) >> 8);
         LSB = ((cpu->program_counter) & 0x00FF);
     }
@@ -27,7 +27,7 @@ void pop_from_stack(I8080* cpu, uint8_t reg) {
 
     // LSB is at address of stack pointer, MSB is at address of stack pointer + 1
 
-    if (reg == 6) {
+    if (reg == 8) {
         (cpu->program_counter) = (cpu->memory)[(cpu->stack_pointer)++];
         (cpu->program_counter) |= ((uint16_t)((cpu->memory)[(cpu->stack_pointer)++]) << 8);
     }
@@ -80,13 +80,14 @@ void update_zero(I8080* cpu, uint8_t result) {
 
 void update_sign(I8080* cpu, uint8_t result) {
     (cpu->registers)[7] &= 0x7F;
-    (cpu->registers)[7] |= ((result & 0x80) >> 7);
+    (cpu->registers)[7] |= (result & 0x80);
 }
 
 void update_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP) {
     // OP = 0 for addition, 1 for subtraction
     // In subtraction cases, B is being subtracted from A
     uint16_t check;
+    uint8_t CARRY_v = CARRY;
     check = A + B;
 
     (cpu->registers)[7] &= 0xFE;
@@ -95,10 +96,10 @@ void update_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP) {
         (cpu->registers)[7] |= (check >= 256);
     }
     else if (OP == 1) {
-        (cpu->registers)[7] |= (A < B);
+        (cpu->registers)[7] |= (A >= B);
     }
     else if (OP == 2) {
-        check += CARRY;
+        check += CARRY_v;
         (cpu->registers)[7] |= (check >= 256);
     }
 
@@ -109,6 +110,7 @@ void update_aux_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP) {
 
     uint8_t Al = A & 0x0F;
     uint8_t Bl = B & 0x0F;
+    uint8_t CARRY_v = CARRY;
 
     uint8_t check = Al + Bl;
 
@@ -117,11 +119,11 @@ void update_aux_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP) {
     if (OP == 0) {
         (cpu->registers)[7] |= ((check >= 16) << 4);
     }
-    else if (OP == 2) {
-        (cpu->registers)[7] |= ((Al < Bl) << 4);
+    else if (OP == 1) {
+        (cpu->registers)[7] |= ((Al >= Bl) << 4);
     }
-    else if (OP == 3) {
-        check += AUX_CARRY;
+    else if (OP == 2) {
+        check += CARRY_v;
         (cpu->registers)[7] |= ((check >= 16) << 4);
     }
 

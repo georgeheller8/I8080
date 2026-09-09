@@ -5,7 +5,7 @@
 
 // Push Data Onto Stack
 void PUSH(I8080* cpu) {
-    uint8_t REG = (cpu->opcode) >> 4;
+    uint8_t REG = ((cpu->opcode) >> 4) & 0x03;
     push_to_stack(cpu, REG * 2);
 
     increment_cycles(cpu, 11);
@@ -14,7 +14,7 @@ void PUSH(I8080* cpu) {
 
 // Pop Data Off Stack
 void POP(I8080* cpu) {
-    uint8_t REG = (cpu->opcode) >> 4;
+    uint8_t REG = ((cpu->opcode) >> 4) & 0x03;
     pop_from_stack(cpu, REG * 2);
 
     increment_cycles(cpu, 10);
@@ -23,9 +23,9 @@ void POP(I8080* cpu) {
 
 // Double ADD
 void DAD(I8080* cpu) {
-    uint8_t REG = (cpu->opcode) >> 4;
+    uint8_t REG = ((cpu->opcode) >> 4) & 0x03;
     uint16_t REG_v;
-    uint16_t val;
+    uint32_t val;
 
     switch (REG) {
         case 0:
@@ -42,7 +42,7 @@ void DAD(I8080* cpu) {
             break;
     }
 
-    val = HL + REG_v;
+    val = (uint32_t)HL + REG_v;
     uint8_t H, L;
     H = (val >> 8);
     L = (val & 0x00FF);
@@ -50,7 +50,7 @@ void DAD(I8080* cpu) {
     (cpu->registers)[4] = H;
     (cpu->registers)[5] = L;
 
-    update_carry(cpu, H, L, 0);
+    set_carry(cpu, val > 0xFFFF);
 
     increment_cycles(cpu, 10);
     increment_pc(cpu, 1);
@@ -58,28 +58,27 @@ void DAD(I8080* cpu) {
 
 // Increment register pair
 void INX(I8080* cpu) {
-    uint8_t REG = (cpu->opcode) >> 4;
-    uint16_t REG_v;
+    uint8_t REG = ((cpu->opcode) >> 4) & 0x03;
     uint16_t val;
     uint8_t H, L;
 
     switch (REG) {
         case 0:
-            REG_v = BC+1;
+            val = BC+1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
             (cpu->registers)[1] = L;
             break;
         case 1:
-            REG_v = DE+1;
+            val = DE+1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
             (cpu->registers)[1] = L;
             break;
         case 2:
-            REG_v = HL+1;
+            val = HL+1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
@@ -96,28 +95,27 @@ void INX(I8080* cpu) {
 
 // Decrement register pair
 void DCX(I8080* cpu) {
-    uint8_t REG = (cpu->opcode) >> 4;
-    uint16_t REG_v;
+    uint8_t REG = ((cpu->opcode) >> 4) & 0x03;
     uint16_t val;
     uint8_t H, L;
 
     switch (REG) {
         case 0:
-            REG_v = BC-1;
+            val = BC-1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
             (cpu->registers)[1] = L;
             break;
         case 1:
-            REG_v = DE-1;
+            val = DE-1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
             (cpu->registers)[1] = L;
             break;
         case 2:
-            REG_v = HL-1;
+            val = HL-1;
             H = (val >> 8);
             L = (val & 0x00FF);
             (cpu->registers)[0] = H;
@@ -148,9 +146,17 @@ void XCHG(I8080* cpu) {
 
 
 // Exchange stack
-void XTHL(I8080* cpu) {
+void XTHL(I8080* cpu) { // TODO: update casting
+
+    uint8_t temp1, temp2;
+    temp1 = (cpu->registers)[5];
+    temp2 = (cpu->registers)[4];
+
     (cpu->registers)[5] = (cpu->memory)[cpu->stack_pointer];
     (cpu->registers)[4] = (cpu->memory)[cpu->stack_pointer+1];
+
+    (cpu->memory)[cpu->stack_pointer] = temp1;
+    (cpu->memory)[cpu->stack_pointer+1] = temp2;
 
     increment_cycles(cpu, 18);
     increment_pc(cpu, 1);

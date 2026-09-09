@@ -7,7 +7,7 @@
 void CALL(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
-    push_to_stack(cpu, 6);
+    push_to_stack(cpu, 8);
     cpu->program_counter = address;
     increment_cycles(cpu, 17);
 }
@@ -17,7 +17,7 @@ void CC(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (CARRY) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -29,7 +29,7 @@ void CNC(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!CARRY) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -41,7 +41,7 @@ void CZ(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (ZERO) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -53,7 +53,7 @@ void CNZ(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!ZERO) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -65,7 +65,7 @@ void CM(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (SIGN) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -77,7 +77,7 @@ void CP(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!SIGN) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -89,7 +89,7 @@ void CPE(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (PARITY) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }
@@ -101,7 +101,7 @@ void CPO(I8080* cpu) {
     uint16_t address = ((cpu->memory)[cpu->program_counter + 2] << 8) | (cpu->memory)[cpu->program_counter + 1];
     increment_pc(cpu, 3);
     if (!PARITY) {
-        push_to_stack(cpu, 6);
+        push_to_stack(cpu, 8);
         cpu->program_counter = address;
         increment_cycles(cpu, 17);
     }

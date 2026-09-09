@@ -5,14 +5,14 @@
 
 // Return
 void RET(I8080* cpu) {
-    pop_from_stack(cpu, 6);
+    pop_from_stack(cpu, 8);
     increment_cycles(cpu, 10);
 }
 
 // Return if Carry
 void RC(I8080* cpu) {
     if (CARRY) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -24,7 +24,7 @@ void RC(I8080* cpu) {
 // Return if Not Carry
 void RNC(I8080* cpu) {
     if (!CARRY) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -36,7 +36,7 @@ void RNC(I8080* cpu) {
 // Return if Zero
 void RZ(I8080* cpu) {
     if (ZERO) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -48,7 +48,7 @@ void RZ(I8080* cpu) {
 // Return if Not Zero
 void RNZ(I8080* cpu) {
     if (!ZERO) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -60,7 +60,7 @@ void RNZ(I8080* cpu) {
 // Return if Minus
 void RM(I8080* cpu) {
     if (SIGN) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -72,7 +72,7 @@ void RM(I8080* cpu) {
 // Return if Positive
 void RP(I8080* cpu) {
     if (!SIGN) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -84,7 +84,7 @@ void RP(I8080* cpu) {
 // Return if Parity Even
 void RPE(I8080* cpu) {
     if (PARITY) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
@@ -96,7 +96,7 @@ void RPE(I8080* cpu) {
 // Return if Parity Odd
 void RPO(I8080* cpu) {
     if (!PARITY) {
-        pop_from_stack(cpu, 6);
+        pop_from_stack(cpu, 8);
         increment_cycles(cpu, 11);
     }
     else {
