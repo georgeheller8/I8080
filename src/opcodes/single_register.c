@@ -74,18 +74,14 @@ void CMA(I8080* cpu) {
 // Decimal adjust accumulator
 void DAA(I8080* cpu) { // TODO: fix
 
-    uint8_t LSB = ACC & 0x0F;
-    uint8_t MSB = ACC >> 4;
+    uint8_t correction = 0;
+    uint8_t carry = CARRY;
 
-    if (LSB > 9 || AUX_CARRY) {
-        update_aux_carry(cpu, ACC, 6, 0);
-        ACC += 6;
-        MSB = (ACC >> 4);
-    }
-    if (MSB > 9 || CARRY) {
-        (cpu->registers)[7] |= (ACC + 0x60 > 255);
-        ACC += 0x60;
-    }
+    if ((ACC & 0x0F) > 9 || AUX_CARRY) correction |= 0x06;
+    if (ACC > 0x99 || CARRY) { correction |= 0x60; carry = 1; }
+    update_aux_carry(cpu, ACC, correction, 0);
+    ACC += correction;
+    set_carry(cpu, carry);
 
     update_zero(cpu, ACC);
     update_sign(cpu, ACC);

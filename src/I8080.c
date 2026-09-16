@@ -1,11 +1,13 @@
 #include "I8080.h"
+#include "util.h"
 #include "opcodes/opcodes.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void init_cpu(I8080* cpu) {
 
-    cpu->program_counter = 0; // needs to change
-    cpu->stack_pointer = 0; // also needs to change
+    cpu->program_counter = 0x0100; // needs to change
+    cpu->stack_pointer = 0xF000; // also needs to change
     cpu->cycles = 0;
     cpu->opcode = 0;
     cpu->INTE = 0;
@@ -48,6 +50,12 @@ void (*dispatch[256])(I8080* cpu) =
 };
 
 void cycle(I8080* cpu) {
+
+    // printf("%04X  %02X  A=%02X BC=%04X DE=%04X HL=%04X SP=%04X  %c%c%c%c%c\n",
+    //     cpu->program_counter, cpu->memory[cpu->program_counter],
+    //     cpu->registers[6], BC, DE, HL, cpu->stack_pointer,
+    //     SIGN?'S':'.', ZERO?'Z':'.', AUX_CARRY?'A':'.',
+    //     PARITY?'P':'.', CARRY?'C':'.');
 
     cpu->opcode = (cpu->memory)[cpu->program_counter];
 

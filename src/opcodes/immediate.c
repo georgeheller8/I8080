@@ -80,7 +80,7 @@ void ACI(I8080* cpu) {
     uint8_t CARRY_v = CARRY;
 
     set_carry(cpu, (uint16_t)(data + ACC + CARRY) > 255);
-    set_aux_carry(cpu, (data & 0x0F) + (ACC & 0x0F) + CARRY > 15);
+    set_aux_carry(cpu, (data & 0x0F) + (ACC & 0x0F) + CARRY_v > 15);
 
     ACC += (data + CARRY_v);
 
@@ -117,7 +117,7 @@ void SBI(I8080* cpu) {
     uint16_t res = CARRY + data;
 
     set_carry(cpu, ACC < res);
-    set_aux_carry(cpu, (ACC & 0x0F) >= ((res & 0x0F) + CARRY_v));
+    set_aux_carry(cpu, (ACC & 0x0F) >= ((data & 0x0F) + CARRY_v));
 
     ACC -= CARRY_v + data;
 
@@ -133,10 +133,11 @@ void SBI(I8080* cpu) {
 void ANI(I8080* cpu) {
     uint8_t data = (cpu->memory)[cpu->program_counter + 1];
 
+    set_aux_carry(cpu, ((ACC | data) & 0x08) != 0);
+
     ACC &= data;
 
     set_carry(cpu, 0);
-    set_aux_carry(cpu, 0);
     update_zero(cpu, ACC);
     update_sign(cpu, ACC);
     update_parity(cpu, ACC);
@@ -181,21 +182,13 @@ void ORI(I8080* cpu) {
 void CPI(I8080* cpu) {
     uint8_t data = (cpu->memory)[cpu->program_counter + 1];
 
-    if (ACC > data) {
-        (cpu->registers)[7] &= 0xFE;
-        (cpu->registers)[7] &= ~(1 << 6);
-    }
-    else if (ACC == data) {
-        (cpu->registers)[7] |= (1 << 6);
-    }
-    else if (ACC < data) {
-        (cpu->registers)[7] |= 0x01;
-        (cpu->registers)[7] &= ~(1 << 6);
-    }
+    uint8_t result = ACC - data;
 
-    update_sign(cpu, ACC-data);
-    update_zero(cpu, ACC-data);
-    update_parity(cpu, ACC-data);
+    set_carry(cpu, ACC < data);
+    set_aux_carry(cpu, (ACC & 0x0F) >= (data & 0x0F));
+    update_sign(cpu, result);
+    update_zero(cpu, result);
+    update_parity(cpu, result);
 
     increment_cycles(cpu, 7);
     increment_pc(cpu, 2);

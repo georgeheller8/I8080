@@ -34,6 +34,7 @@ void pop_from_stack(I8080* cpu, uint8_t reg) {
     else {
         (cpu->registers)[reg+1] = (cpu->memory)[(cpu->stack_pointer)++];
         (cpu->registers)[reg] = (cpu->memory)[(cpu->stack_pointer)++];
+        if (reg == 6) (cpu->registers)[7] = ((cpu->registers)[7] & 0xD7) | 0x02;
     }
 
 }
@@ -96,7 +97,7 @@ void update_carry(I8080* cpu, uint8_t A, uint8_t B, uint8_t OP) {
         (cpu->registers)[7] |= (check >= 256);
     }
     else if (OP == 1) {
-        (cpu->registers)[7] |= (A >= B);
+        (cpu->registers)[7] |= (A < B);
     }
     else if (OP == 2) {
         check += CARRY_v;

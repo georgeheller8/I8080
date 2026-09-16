@@ -3,6 +3,19 @@
 #include <time.h>
 #include "I8080.h"
 
+static void bdos(I8080* cpu) {
+    switch (cpu->registers[1]) {          // C
+        case 2:                           // print char in E
+            putchar(cpu->registers[3]);
+            break;
+        case 9: {                         // print '$'-terminated string at DE
+            uint16_t a = ((uint16_t)cpu->registers[2] << 8) | cpu->registers[3];
+            while (cpu->memory[a] != '$') putchar(cpu->memory[a++]);
+            break;
+        }
+    }
+}
+
 int loadROM(const char* filename, I8080* cpu) {
     FILE* inputFile = fopen(filename, "rb");
 
@@ -15,7 +28,7 @@ int loadROM(const char* filename, I8080* cpu) {
 
     while (byte != EOF) {
         
-        (cpu->memory)[i + 0x200] = byte;
+        (cpu->memory)[i + 0x0100] = byte;
         ++i;
         byte = fgetc(inputFile);
 
@@ -51,30 +64,30 @@ int main(int argc, char* argv[]) {
 
 
     // 2. Create a Window
-    SDL_Window* window = SDL_CreateWindow(
-        "CHIP8",                  // Window title
-        SDL_WINDOWPOS_CENTERED,           // Initial x position
-        SDL_WINDOWPOS_CENTERED,           // Initial y position
-        1024,                              // Width, in pixels
-        512,                              // Height, in pixels
-        SDL_WINDOW_SHOWN                  // Flags
-    );
+    // SDL_Window* window = SDL_CreateWindow(
+    //     "CHIP8",                  // Window title
+    //     SDL_WINDOWPOS_CENTERED,           // Initial x position
+    //     SDL_WINDOWPOS_CENTERED,           // Initial y position
+    //     1024,                              // Width, in pixels
+    //     512,                              // Height, in pixels
+    //     SDL_WINDOW_SHOWN                  // Flags
+    // );
 
-    if (window == NULL) {
-        printf("Window creation failed! SDL_Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
+    // if (window == NULL) {
+    //     printf("Window creation failed! SDL_Error: %s\n", SDL_GetError());
+    //     SDL_Quit();
+    //     return 1;
+    // }
 
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
+    // SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, 0);
 
-    if (renderer == NULL) {
-        printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
-        SDL_Quit();
-        return 1;
-    }
+    // if (renderer == NULL) {
+    //     printf("Window could not be created! SDL_Error: %s\n", SDL_GetError());
+    //     SDL_Quit();
+    //     return 1;
+    // }
 
-    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 64, 32);
+    // SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 64, 32);
 
     struct timespec req, rem;
     req.tv_sec = 0;
@@ -82,47 +95,20 @@ int main(int argc, char* argv[]) {
 
     int keepOpen = 1;
 
+    cpu->memory[0x0005] = 0xC9;
+
     while (keepOpen) {
+
+        if (cpu->program_counter == 0x0005) bdos(cpu);
+        if (cpu->program_counter == 0x0000) break;
+
         cycle(cpu);
-
-        SDL_Event event;
-        while(SDL_PollEvent(&event) > 0) {
-            switch (event.type) {
-
-                case SDL_QUIT:
-                    keepOpen = 0;
-                    break;
-                // TODO: Key presses
-                default:
-                    break;
-            }
-        }
-    
-        int RenderClear = SDL_RenderClear(renderer);
-
-        uint32_t* bytes = NULL;
-        int pitch = 0;
-
-        SDL_LockTexture(texture, NULL, &bytes, &pitch);
-
-        // for (size_t i = 0; i < 64*32; ++i) {
-        //     bytes[i] = ((cpu->graphics)[i] == 1) ? 0xFFFFFFFF : 0x000000FF;
-        // }
-
-        // TODO: 
-
-        SDL_UnlockTexture(texture);
-
-        int RenderCopy = SDL_RenderCopy(renderer, texture, NULL, NULL);
-        SDL_RenderPresent(renderer);
-        nanosleep(&req, &rem);
-
     }
 
-    SDL_DestroyWindow(window);
-    SDL_DestroyTexture(texture);
-    SDL_DestroyRenderer(renderer);
-    SDL_Quit();
+    // SDL_DestroyWindow(window);
+    // SDL_DestroyTexture(texture);
+    // SDL_DestroyRenderer(renderer);
+    // SDL_Quit();
     free(cpu);
 
     return 0;

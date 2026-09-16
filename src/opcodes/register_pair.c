@@ -42,7 +42,7 @@ void DAD(I8080* cpu) {
             break;
     }
 
-    val = (uint32_t)HL + REG_v;
+    val = (uint32_t)HL + (uint32_t)REG_v;
     uint8_t H, L;
     H = (val >> 8);
     L = (val & 0x00FF);
@@ -74,15 +74,15 @@ void INX(I8080* cpu) {
             val = DE+1;
             H = (val >> 8);
             L = (val & 0x00FF);
-            (cpu->registers)[0] = H;
-            (cpu->registers)[1] = L;
+            (cpu->registers)[2] = H;
+            (cpu->registers)[3] = L;
             break;
         case 2:
             val = HL+1;
             H = (val >> 8);
             L = (val & 0x00FF);
-            (cpu->registers)[0] = H;
-            (cpu->registers)[1] = L;
+            (cpu->registers)[4] = H;
+            (cpu->registers)[5] = L;
             break;
         case 3:
             (cpu->stack_pointer) += 1;
@@ -111,15 +111,15 @@ void DCX(I8080* cpu) {
             val = DE-1;
             H = (val >> 8);
             L = (val & 0x00FF);
-            (cpu->registers)[0] = H;
-            (cpu->registers)[1] = L;
+            (cpu->registers)[2] = H;
+            (cpu->registers)[3] = L;
             break;
         case 2:
             val = HL-1;
             H = (val >> 8);
             L = (val & 0x00FF);
-            (cpu->registers)[0] = H;
-            (cpu->registers)[1] = L;
+            (cpu->registers)[4] = H;
+            (cpu->registers)[5] = L;
             break;
         case 3:
             (cpu->stack_pointer) -= 1;

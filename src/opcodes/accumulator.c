@@ -56,8 +56,8 @@ void ADC(I8080* cpu) {
         SRC_v = (cpu->registers)[6];
     }
 
-    update_carry(cpu, SRC_v, ACC, 2);
     update_aux_carry(cpu, SRC_v, ACC, 2);
+    update_carry(cpu, SRC_v, ACC, 2);
 
     ACC += (SRC_v + CARRY_v);
 
@@ -161,6 +161,8 @@ void ANA(I8080* cpu) { // need to fix clearing aux carry?
         SRC_v = (cpu->registers)[6];
     }
 
+    set_aux_carry(cpu, ((ACC | SRC_v) & 0x08) != 0);
+
     ACC &= SRC_v;
     (cpu->registers)[7] &= 0xFE;
 
@@ -261,23 +263,14 @@ void CMP(I8080* cpu) {
     }
 
     uint8_t ACC_v;
-    ACC_v = ACC;
 
-    if (ACC_v > SRC_v) {
-        (cpu->registers)[7] &= 0xFE;
-        (cpu->registers)[7] &= ~(1 << 6);
-    }
-    else if (ACC_v == SRC_v) {
-        (cpu->registers)[7] |= (1 << 6);
-    }
-    else if (ACC_v < SRC_v) {
-        (cpu->registers)[7] |= 0x01;
-        (cpu->registers)[7] &= ~(1 << 6);
-    }
+    uint8_t result = ACC - SRC_v;
 
-    update_sign(cpu, ACC_v - SRC_v);
-    update_zero(cpu, ACC_v - SRC_v);
-    update_parity(cpu, ACC_v - SRC_v);
+    set_carry(cpu, ACC < SRC_v);
+    set_aux_carry(cpu, (ACC & 0x0F) >= (SRC_v & 0x0F));
+    update_sign(cpu, result);
+    update_zero(cpu, result);
+    update_parity(cpu, result);
 
     if (SRC != 6) {
         increment_cycles(cpu, 4);
