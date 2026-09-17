@@ -1,4 +1,4 @@
-SRC = main.c I8080.c util.c $(wildcard opcodes/*.c)
+SRC = main.c I8080.c util.c space.c $(wildcard opcodes/*.c)
 
 debug:
 	gcc $(SRC) -I. -g -gdwarf-4 -o I8080 `sdl2-config --cflags --libs`
