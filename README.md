@@ -1,1 +1,40 @@
-# I8080
+# Intel 8080 Emulator
+
+Cycle-counting Intel 8080 emulator, with additional hardware emulation to support Space Invaders.
+
+## Installation/Dependencies
+
+This project uses SDL2. The Makefile requires that `sdl2-config` be located on your PATH. To get it:
+
+- **macOS (Homebrew):** `brew install sdl2`
+- **Debian/Ubuntu:** `sudo apt install libsdl2-dev`
+- **Fedora:** `sudo dnf install SDL2-devel`
+- **Arch:** `sudo pacman -S sdl2`
+
+To check that it's set up, run `sdl2-config --cflags --libs`. It should print compiler and linker flags, not "command not found".
+
+
+## Building/Running
+
+There are four separate build targets for this project: a raw CPU emulator, the same emulator with additional hardware support for space invaders, and debug variants for both. To build them, in the `src/` directory run:
+
+- CPU-only: `make cpu`
+- Space Invaders: `make space`
+- CPU-only (debug): `make cpu-debug`
+- Space Invaders (debug): `make space-debug`
+
+The generic CPU emulator accepts test ROMs and writes to stdout. To run a test rom, in the `src/` directory run:
+
+`./CPU <path/to/rom>`
+
+The Space Invaders emulator loads the space invaders ROM by default. To run this emulator, in the `src/` director run:
+
+`./space`
+
+Note that this project uses relative pathing, so all executables must be run in `src/`.
+
+## Credits
+
+Much of the SDL setup came from [this](https://www.youtube.com/watch?v=YHkBgR6yvbY&t=3421s) YouTube video on CHIP-8 emulators, and guidance on Space Invaders hardware setup came from [here](https://pranayga.github.io/8080-emulator/).
+
+
