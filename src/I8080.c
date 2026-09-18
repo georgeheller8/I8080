@@ -19,9 +19,6 @@ void init_cpu(I8080* cpu, space* space_pointer) {
     for (size_t i = 0; i < 8; ++i) {
         (cpu->registers)[i] = 0;
     }
-    for (size_t i = 0; i < 2; ++i) {
-        (cpu->wz)[i] = 0;
-    }
 
     (cpu->registers)[7] |= (1 << 1);
 

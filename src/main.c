@@ -8,19 +8,6 @@
 #include "util.h"
 #include "space.h"
 
-static void bdos(I8080* cpu) {
-    switch (cpu->registers[1]) {          // C
-        case 2:                           // print char in E
-            putchar(cpu->registers[3]);
-            break;
-        case 9: {                         // print '$'-terminated string at DE
-            uint16_t a = ((uint16_t)cpu->registers[2] << 8) | cpu->registers[3];
-            while (cpu->memory[a] != '$') putchar(cpu->memory[a++]);
-            break;
-        }
-    }
-}
-
 static void generateInterrupt(I8080* cpu, uint8_t num) {
     // generates interrupt RST 1 when num = 1, RST 2 when num = 2
 
@@ -45,7 +32,7 @@ int loadROM(const char* filename, I8080* cpu) {
 
     while (byte != EOF) {
         
-        (cpu->memory)[i + 0x0100] = byte;
+        (cpu->memory)[i] = byte;
         ++i;
         byte = fgetc(inputFile);
 
@@ -107,7 +94,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 244, 256);
+    SDL_Texture* texture = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, 224, 256);
 
     int frequency = SDL_GetPerformanceFrequency();
 
@@ -115,11 +102,8 @@ int main(int argc, char* argv[]) {
 
     int firstHalf = 1;
 
-    cpu->memory[0x0005] = 0xC9;
-
     uint64_t frame_end;
-    uint64_t next_int;
-    uint8_t which;
+    uint64_t first_int;
     uint32_t* bytes = NULL;
     int pitch = 0;
     int start_time = 0;
@@ -135,17 +119,15 @@ int main(int argc, char* argv[]) {
     while (keepOpen) {
 
         frame_end = cpu->cycles + 33333;
-        next_int = cpu->cycles + 16667;
-        which = 1;
+        first_int = cpu->cycles + 16667;
+        
+        while (cpu->cycles < first_int) cycle(cpu);
 
-        while (cpu->cycles < frame_end) {
-            if (cpu->cycles >= next_int) {
-                generateInterrupt(cpu, which);
-                which = 2;
-                next_int += 16667;
-            }
-            cycle(cpu);
-        }
+        generateInterrupt(cpu, 1);
+
+        while (cpu->cycles < frame_end) cycle(cpu);
+
+        generateInterrupt(cpu, 2);
 
         SDL_Event event;
         while(SDL_PollEvent(&event) > 0) {
@@ -153,6 +135,66 @@ int main(int argc, char* argv[]) {
 
                 case SDL_QUIT:
                     keepOpen = 0;
+                    break;
+                case SDL_KEYDOWN:
+                    switch (event.key.keysym.sym) {
+                        case 'c': // credit
+                            printf("Here\n");
+                            si->iports[1] |= 1;
+                            break;
+                        case 't': // 2 player start
+                            printf("Here\n");
+                            si->iports[1] |= (1 << 1);
+                            break;
+                        case 'o': // 1 player start
+                            printf("Here\n");
+                            si->iports[1] |= (1 << 2);
+                            break;
+                        case 'w': // P1 shot
+                            printf("Here\n");
+                            si->iports[1] |= (1 << 4);
+                            break;
+                        case 'a': // P1 left
+                            printf("Here\n");
+                            si->iports[1] |= (1 << 5);
+                            break;
+                        case 'd': // P1 right
+                            printf("Here\n");
+                            si->iports[1] |= (1 << 6);
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case SDL_KEYUP:
+                    switch (event.key.keysym.sym) {
+                        case 'c': // credit
+                            printf("Here\n");
+                            si->iports[1] &= ~1;
+                            break;
+                        case 't': // 2 player start
+                            printf("Here\n");
+                            si->iports[1] &= ~(1 << 1);
+                            break;
+                        case 'o': // 1 player start
+                            printf("Here\n");
+                            si->iports[1] &= ~(1 << 2);
+                            break;
+                        case 'w': // P1 shot
+                            printf("Here\n");
+                            si->iports[1] &= ~(1 << 4);
+                            break;
+                        case 'a': // P1 left
+                            printf("Here\n");
+                            si->iports[1] &= ~(1 << 5);
+                            break;
+                        case 'd': // P1 right
+                            printf("Here\n");
+                            si->iports[1] &= ~(1 << 6);
+                            break;
+                        default:
+                            break;
+                    }
                     break;
                 // TODO: Add all necessary event polls/key presses
                 default:

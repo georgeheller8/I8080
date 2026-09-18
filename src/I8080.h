@@ -8,7 +8,6 @@ typedef struct {
 
     // Registers
 
-    uint8_t wz[2]; // WZ -> 01
     uint8_t registers[8]; // BCDEHLAF -> 01234567
     uint16_t program_counter;
     uint16_t stack_pointer;
