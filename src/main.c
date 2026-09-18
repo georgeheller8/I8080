@@ -139,27 +139,22 @@ int main(int argc, char* argv[]) {
                 case SDL_KEYDOWN:
                     switch (event.key.keysym.sym) {
                         case 'c': // credit
-                            printf("Here\n");
                             si->iports[1] |= 1;
                             break;
                         case 't': // 2 player start
-                            printf("Here\n");
                             si->iports[1] |= (1 << 1);
                             break;
                         case 'o': // 1 player start
-                            printf("Here\n");
+
                             si->iports[1] |= (1 << 2);
                             break;
                         case 'w': // P1 shot
-                            printf("Here\n");
                             si->iports[1] |= (1 << 4);
                             break;
                         case 'a': // P1 left
-                            printf("Here\n");
                             si->iports[1] |= (1 << 5);
                             break;
                         case 'd': // P1 right
-                            printf("Here\n");
                             si->iports[1] |= (1 << 6);
                             break;
                         default:
@@ -169,27 +164,21 @@ int main(int argc, char* argv[]) {
                 case SDL_KEYUP:
                     switch (event.key.keysym.sym) {
                         case 'c': // credit
-                            printf("Here\n");
                             si->iports[1] &= ~1;
                             break;
                         case 't': // 2 player start
-                            printf("Here\n");
                             si->iports[1] &= ~(1 << 1);
                             break;
                         case 'o': // 1 player start
-                            printf("Here\n");
                             si->iports[1] &= ~(1 << 2);
                             break;
                         case 'w': // P1 shot
-                            printf("Here\n");
                             si->iports[1] &= ~(1 << 4);
                             break;
                         case 'a': // P1 left
-                            printf("Here\n");
                             si->iports[1] &= ~(1 << 5);
                             break;
                         case 'd': // P1 right
-                            printf("Here\n");
                             si->iports[1] &= ~(1 << 6);
                             break;
                         default:
