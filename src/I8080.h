@@ -2,6 +2,7 @@
 #define I8080_H
 
 #include <stdint.h>
+#include "space.h"
 
 typedef struct {
 
@@ -19,6 +20,10 @@ typedef struct {
 
     uint64_t cycles;
 
+    // space
+
+    space* si;
+
 
 } I8080;
 
@@ -26,7 +31,7 @@ typedef struct {
 // stack/counter and flag helpers are declared in util.h, the instruction set
 // in opcodes/opcodes.h.
 
-void init_cpu(I8080* cpu);
+void init_cpu(I8080* cpu, space* space_pointer);
 void cycle(I8080* cpu);
 
 #endif // I8080_H

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-void init_cpu(I8080* cpu) {
+void init_cpu(I8080* cpu, space* space_pointer) {
 
     cpu->program_counter = 0x0100; // needs to change
     cpu->stack_pointer = 0xF000; // also needs to change
@@ -24,6 +24,8 @@ void init_cpu(I8080* cpu) {
     }
 
     (cpu->registers)[7] |= (1 << 1);
+
+    cpu->si = space_pointer;
 
 }
 
