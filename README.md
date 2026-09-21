@@ -1,4 +1,4 @@
-<img src="invaders.gif" width="10%">
+<img src="invaders.gif" width="20%">
 
 # Intel 8080 Emulator
 
