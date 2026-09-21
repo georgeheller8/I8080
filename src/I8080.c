@@ -1,12 +1,16 @@
 #include "I8080.h"
 #include "util.h"
-#include "opcodes/opcodes.h"
+#include "opcodes.h"
 #include <stdlib.h>
 #include <stdio.h>
 
-void init_cpu(I8080* cpu, space* space_pointer) {
+void init_cpu(I8080* cpu) {
 
-    cpu->program_counter = 0x0100; // needs to change
+#ifdef SPACE_INVADERS
+    cpu->program_counter = 0x0000; // arcade ROM starts at the reset vector
+#else
+    cpu->program_counter = 0x0100; // CP/M programs are loaded at 0x0100
+#endif
     cpu->stack_pointer = 0xF000; // also needs to change
     cpu->cycles = 0;
     cpu->opcode = 0;
@@ -21,8 +25,6 @@ void init_cpu(I8080* cpu, space* space_pointer) {
     }
 
     (cpu->registers)[7] |= (1 << 1);
-
-    cpu->si = space_pointer;
 
 }
 

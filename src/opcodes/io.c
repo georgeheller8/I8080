@@ -3,18 +3,20 @@
 #include "util.h"
 #include "opcodes.h"
 
-// will likely change port_in and port_out to be declared in opcodes.h, 
-// and then include that in space.c and define the functions there. 
-// allows for implementations to be hardware-specific and for 
-// multiple executables to be compiled without needing to 
-// use preprocessor instructions 
+// Ports are only wired up in the Space Invaders build (SPACE_INVADERS). The
+// bare CPU build has nothing attached: IN reads 0 and OUT is ignored.
 
 // Input
 void IN(I8080* cpu) {
 
     uint8_t device = (cpu->memory)[cpu->program_counter+1];
 
+#ifdef SPACE_INVADERS
     ACC = cpu->si->port_in(cpu->si, device);
+#else
+    (void)device; // no devices attached to the bare CPU
+    ACC = 0;
+#endif
 
     increment_pc(cpu, 2);
     increment_cycles(cpu, 10);
@@ -25,7 +27,11 @@ void OUT(I8080* cpu) {
 
     uint8_t device = (cpu->memory)[cpu->program_counter+1];
 
+#ifdef SPACE_INVADERS
     cpu->si->port_out(cpu->si, device, ACC);
+#else
+    (void)device; // no devices attached to the bare CPU
+#endif
 
     increment_pc(cpu, 2);
     increment_cycles(cpu, 10);

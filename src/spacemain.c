@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
 #include <SDL.h>
@@ -7,6 +8,29 @@
 #include "I8080.h"
 #include "util.h"
 #include "space.h"
+
+// Copies the ROM into memory starting at `origin`.
+int loadROM(const char* filename, I8080* cpu, uint16_t origin) {
+    FILE* inputFile = fopen(filename, "rb");
+
+    if (inputFile == NULL) {
+        return -1;
+    }
+
+    size_t i = origin;
+    int byte = fgetc(inputFile);
+
+    while (byte != EOF && i < sizeof(cpu->memory)) {
+        
+        (cpu->memory)[i] = byte;
+        ++i;
+        byte = fgetc(inputFile);
+
+    }
+
+    fclose(inputFile);
+    return 0;
+}
 
 static void generateInterrupt(I8080* cpu, uint8_t num) {
     // generates interrupt RST 1 when num = 1, RST 2 when num = 2
@@ -20,30 +44,7 @@ static void generateInterrupt(I8080* cpu, uint8_t num) {
 
 }
 
-int loadROM(const char* filename, I8080* cpu) {
-    FILE* inputFile = fopen(filename, "rb");
-
-    if (inputFile == NULL) {
-        return -1;
-    }
-
-    size_t i = 0;
-    int byte = fgetc(inputFile);
-
-    while (byte != EOF) {
-        
-        (cpu->memory)[i] = byte;
-        ++i;
-        byte = fgetc(inputFile);
-
-    }
-
-    fclose(inputFile);
-    return 0;
-}
-
 int main(int argc, char* argv[]) {
-    // 1. Initialize SDL Video subsystem
     if (SDL_Init(SDL_INIT_VIDEO) < 0) {
         printf("SDL could not initialize! SDL_Error: %s\n", SDL_GetError());
         return 1;
@@ -53,24 +54,18 @@ int main(int argc, char* argv[]) {
     init_space(si);
 
     I8080* cpu = malloc(sizeof(I8080));
-    init_cpu(cpu, si);
+    init_cpu(cpu);
+    cpu->si = si;
 
-    if (argc < 2) {
-        printf("Error: no ROM file provided\n");
-        return 1;
-    }
+    const char* filename = (argc < 2) ? "roms/invaders.rom" : argv[1];
 
-    const char* filename = argv[1];
-
-    int romStatus = loadROM(filename, cpu);
+    int romStatus = loadROM(filename, cpu, 0x0000);
 
     if (romStatus == -1) {
         printf("Error: file does not exist\n");
         return 1;
     }
 
-
-    // 2. Create a Window
     SDL_Window* window = SDL_CreateWindow(
         "Space Invaders",                  // Window title
         SDL_WINDOWPOS_CENTERED,           // Initial x position
@@ -185,7 +180,7 @@ int main(int argc, char* argv[]) {
                             break;
                     }
                     break;
-                // TODO: Add all necessary event polls/key presses
+
                 default:
                     break;
             }

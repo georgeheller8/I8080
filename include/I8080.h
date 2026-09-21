@@ -2,7 +2,10 @@
 #define I8080_H
 
 #include <stdint.h>
+
+#ifdef SPACE_INVADERS
 #include "space.h"
+#endif
 
 typedef struct {
 
@@ -19,9 +22,11 @@ typedef struct {
 
     uint64_t cycles;
 
-    // space
+#ifdef SPACE_INVADERS
+    // Space Invaders I/O hardware, used by IN/OUT
 
     space* si;
+#endif
 
 
 } I8080;
@@ -30,7 +35,7 @@ typedef struct {
 // stack/counter and flag helpers are declared in util.h, the instruction set
 // in opcodes/opcodes.h.
 
-void init_cpu(I8080* cpu, space* space_pointer);
+void init_cpu(I8080* cpu);
 void cycle(I8080* cpu);
 
 #endif // I8080_H

@@ -16,22 +16,20 @@ To check that it's set up, run `sdl2-config --cflags --libs`. It should print co
 
 ## Building/Running
 
-There are four separate build targets for this project: a raw CPU emulator, the same emulator with additional hardware support for space invaders, and debug variants for both. To build them, in the `src/` directory run:
+There are two separate build targets for this project: a raw CPU emulator and the same emulator with additional hardware support for space invaders. To build them, in the project root run:
 
 - CPU-only: `make cpu`
 - Space Invaders: `make space`
-- CPU-only (debug): `make cpu-debug`
-- Space Invaders (debug): `make space-debug`
 
-The generic CPU emulator accepts test ROMs and writes to stdout. To run a test rom, in the `src/` directory run:
+The generic CPU emulator accepts test ROMs and writes to stdout. To run a test rom, in the project root run:
 
-`./CPU <path/to/rom>`
+`./cpu <path/to/rom>`
 
-The Space Invaders emulator loads the space invaders ROM by default. To run this emulator, in the `src/` director run:
+The Space Invaders emulator loads the space invaders ROM by default. To run this emulator, in the project root run:
 
 `./space`
 
-Note that this project uses relative pathing, so all executables must be run in `src/`.
+Note that this project uses relative pathing, so all executables must be run from the project root.
 
 ## Credits
 
