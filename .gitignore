@@ -1,2 +1,5 @@
 .vscode
 **/.DS_Store
+/cpu
+/space
+roms/invaders*

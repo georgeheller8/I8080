@@ -52,16 +52,21 @@ void (*dispatch[256])(I8080* cpu) =
 
 void cycle(I8080* cpu) {
 
+    // Used during tracing, helpful for debugging:
+
     // printf("%04X  %02X  A=%02X BC=%04X DE=%04X HL=%04X SP=%04X  %c%c%c%c%c\n",
     //     cpu->program_counter, cpu->memory[cpu->program_counter],
     //     cpu->registers[6], BC, DE, HL, cpu->stack_pointer,
     //     SIGN?'S':'.', ZERO?'Z':'.', AUX_CARRY?'A':'.',
     //     PARITY?'P':'.', CARRY?'C':'.');
 
+    if (cpu->HALT) {
+        increment_cycles(cpu, 4);
+        return;
+    }
+
     cpu->opcode = (cpu->memory)[cpu->program_counter];
 
     dispatch[cpu->opcode](cpu);
-
-    // check for interrupts
 
 }

@@ -9,7 +9,7 @@
 #include "util.h"
 #include "space.h"
 
-// Copies the ROM into memory starting at `origin`.
+// Copies the ROM into memory
 int loadROM(const char* filename, I8080* cpu, uint16_t origin) {
     FILE* inputFile = fopen(filename, "rb");
 
@@ -62,7 +62,14 @@ int main(int argc, char* argv[]) {
     int romStatus = loadROM(filename, cpu, 0x0000);
 
     if (romStatus == -1) {
-        printf("Error: file does not exist\n");
+        printf("Error: could not open ROM file '%s'\n", filename);
+        if (argc < 2) {
+            printf("The Space Invaders ROM is not included with this project. "
+                   "Place your own copy at roms/invaders.rom (see README.md).\n");
+        }
+        free(cpu);
+        free(si);
+        SDL_Quit();
         return 1;
     }
 
@@ -99,7 +106,7 @@ int main(int argc, char* argv[]) {
 
     uint64_t frame_end;
     uint64_t first_int;
-    uint32_t* bytes = NULL;
+    void* pixels = NULL;
     int pitch = 0;
     int start_time = 0;
     int current_time = 0;
@@ -140,7 +147,6 @@ int main(int argc, char* argv[]) {
                             si->iports[1] |= (1 << 1);
                             break;
                         case 'o': // 1 player start
-
                             si->iports[1] |= (1 << 2);
                             break;
                         case 'w': // P1 shot
@@ -151,6 +157,15 @@ int main(int argc, char* argv[]) {
                             break;
                         case 'd': // P1 right
                             si->iports[1] |= (1 << 6);
+                            break;
+                        case 'i': // P2 shot
+                            si->iports[2] |= (1 << 4);
+                            break;
+                        case 'j': // P2 left
+                            si->iports[2] |= (1 << 5);
+                            break;
+                        case 'l': // P2 right
+                            si->iports[2] |= (1 << 6);
                             break;
                         default:
                             break;
@@ -176,6 +191,15 @@ int main(int argc, char* argv[]) {
                         case 'd': // P1 right
                             si->iports[1] &= ~(1 << 6);
                             break;
+                        case 'i': // P2 shot
+                            si->iports[2] &= ~(1 << 4);
+                            break;
+                        case 'j': // P2 left
+                            si->iports[2] &= ~(1 << 5);
+                            break;
+                        case 'l': // P2 right
+                            si->iports[2] &= ~(1 << 6);
+                            break;
                         default:
                             break;
                     }
@@ -186,7 +210,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        SDL_LockTexture(texture, NULL, &bytes, &pitch);
+        SDL_LockTexture(texture, NULL, &pixels, &pitch);
+        uint32_t* bytes = pixels;
 
         // fill in upwards, then left to right. bytewise, up 32 times, right 224 times
 

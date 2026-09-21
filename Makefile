@@ -8,6 +8,6 @@ cpu:
 space:
 	gcc src/spacemain.c src/space.c $(CORE) $(CFLAGS) -DSPACE_INVADERS -o space `sdl2-config --cflags --libs`
 clean:
-	rm -f CPU space
+	rm -f cpu space
 
 .PHONY: cpu space clean

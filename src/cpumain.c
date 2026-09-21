@@ -65,6 +65,7 @@ int main(int argc, char* argv[]) {
 
         if (cpu->program_counter == 0x0005) bdos(cpu);
         if (cpu->program_counter == 0x0000) break;
+        if (cpu->HALT) break;
 
         cycle(cpu);
     }

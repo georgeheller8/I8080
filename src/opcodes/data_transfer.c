@@ -33,7 +33,7 @@ void MOV(I8080* cpu) {
 
     increment_pc(cpu, 1);
 
-    if (SRC != 5 && DEST != 5) {
+    if (SRC != 6 && DEST != 6) {
         increment_cycles(cpu, 5);
     }
     else {
