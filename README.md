@@ -31,6 +31,17 @@ The Space Invaders emulator loads the space invaders ROM by default. To run this
 
 Note that this project uses relative pathing, so all executables must be run from the project root.
 
+## Playing Space Invaders
+
+Space invaders in this project is designed for singeplayer only. While the game itself says that it is a two-player game, the ROM does not actually have support for two players.
+
+Controls:
+- Add Credit: c
+- Start Game: o (t also works when two credits are inserted)
+- Move Left: a
+- Move Right: r
+- Shoot: w
+
 ## Credits
 
 Much of the SDL setup came from [this](https://www.youtube.com/watch?v=YHkBgR6yvbY&t=3421s) YouTube video on CHIP-8 emulators, and guidance on Space Invaders hardware setup came from [here](https://pranayga.github.io/8080-emulator/).
