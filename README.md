@@ -1,3 +1,5 @@
+<img src="invaders.gif" width="10%">
+
 # Intel 8080 Emulator
 
 Cycle-counting Intel 8080 emulator, with additional hardware emulation to support Space Invaders.
